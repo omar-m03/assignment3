@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/pico-css/dist/pico.min.css">
+    <title>Student Nationalities Data</title>
+    <style>
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Statistics of Students' Nationalities</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Year</th>
+                    <th>Semester</th>
+                    <th>Programs</th>
+                    <th>Nationality</th>
+                    <th>Colleges</th>
+                    <th>Number of Students</th>
+                </tr>
+            </thead>
+            <tbody id="data-table-body">
+                <!-- Rows will be populated here -->
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        async function fetchData() {
+            const url = "https://data.gov.bh/api/explore/v2.1/catalog/datasets/01-statistics-of-students-nationalities_updated/records?where=colleges%20like%20%22IT%22%20AND%20the_programs%20like%20%22bachelor%22&limit=100";
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                return data.results; // Return the 'results' part of the response
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        function populateTable(data) {
+            const tableBody = document.getElementById('data-table-body');
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.year}</td>
+                    <td>${item.semester}</td>
+                    <td>${item.the_programs}</td>
+                    <td>${item.nationality}</td>
+                    <td>${item.colleges}</td>
+                    <td>${item.number_of_students}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Fetch data and populate the table
+        fetchData().then(data => {
+            if (data) {
+                populateTable(data);
+            }
+        });
+    </script>
+</body>
+</html>
